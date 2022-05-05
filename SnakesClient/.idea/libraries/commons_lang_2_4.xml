@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="commons-lang-2.4">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/commons-lang-2.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jdom.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-3.2.2.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/sfs2x-client-core.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/SFS2X_API_Java.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-simple-1.6.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
