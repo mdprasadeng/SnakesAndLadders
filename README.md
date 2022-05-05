@@ -1,4 +1,6 @@
 # SnakesAndLadders
+* Lets build a Snakes And Ladders Game
+* All of us can play together 
 * Getting Hello World working via IDE
 * What is the IDE doing to make it work
 * Java History
@@ -12,3 +14,9 @@
 * A sample client to show the information
 * GUI for client (if we have more than half hour left)
 * Summary
+
+# Session 1 Notes
+https://github.com/mdprasadeng/SnakesAndLadders
+https://www.smartfoxserver.com/
+https://www.jetbrains.com/idea/download
+
