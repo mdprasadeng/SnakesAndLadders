@@ -16,7 +16,6 @@
 * Summary
 
 # Session 1 Notes
-https://github.com/mdprasadeng/SnakesAndLadders
-https://www.smartfoxserver.com/
-https://www.jetbrains.com/idea/download
-
+* This repo : https://github.com/mdprasadeng/SnakesAndLadders
+* Smartfox Server: https://www.smartfoxserver.com/
+* Intellij: https://www.jetbrains.com/idea/download
