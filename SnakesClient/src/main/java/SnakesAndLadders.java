@@ -6,6 +6,7 @@ import imgui.ImDrawList;
 import imgui.ImFont;
 import imgui.ImGui;
 import imgui.app.Application;
+import java.util.Random;
 
 public class SnakesAndLadders extends Application {
 
@@ -17,7 +18,7 @@ public class SnakesAndLadders extends Application {
     public static int OFF_X = 150;
     public static int OFF_Y = 60;
     private World world;
-
+    private int lastRoll;
     @Override
     protected void preRun() {
         super.preRun();
@@ -57,9 +58,28 @@ public class SnakesAndLadders extends Application {
         int COLOR_S = ImGui.getColorU32(1f, 0f, 0f, 1);
         int COLOR_L = ImGui.getColorU32(0f, 1f, 0f, 1);
 
-        ImGui.text("Hello");
+        ImGui.text("Last Roll was " + lastRoll);
+        String playerId = world.playerIds[world.currentTurnBy];
+        if (ImGui.button("Play As " + playerId)) {
+            int min = 1;
+            int max = 6;
+            Player player = world.players.stream().filter(e -> e.id.equals(playerId)).findFirst()
+                .get();
+            Random random = new Random();
+            int value = random.nextInt(max + min) + min;
+            player.position += value;
+            lastRoll = value;
+            world.currentTurnBy +=1;
+            if (world.currentTurnBy == 4) {
+                world.currentTurnBy = 0;
+            }
 
-        ImGui.button("Play As ");
+            Line line = world.lines.get(player.position);
+            if (line != null) {
+                player.position = line.end;
+            }
+
+        }
 
         ImDrawList drawList = ImGui.getWindowDrawList();
 
