@@ -8,6 +8,7 @@ import com.smartfoxserver.v2.entities.data.ISFSObject;
 import com.smartfoxserver.v2.exceptions.SFSException;
 import com.smartfoxserver.v2.extensions.BaseSFSExtension;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class SnakesExt extends BaseSFSExtension {
@@ -18,6 +19,7 @@ public class SnakesExt extends BaseSFSExtension {
   public void init() {
     System.out.println("Snakes are created");
     this.addEventListener(SFSEventType.USER_JOIN_ZONE, this);
+
   }
 
   @Override
@@ -26,8 +28,10 @@ public class SnakesExt extends BaseSFSExtension {
   }
 
   @Override
-  public void handleClientRequest(String s, User user, ISFSObject isfsObject) throws SFSException {
+  public void handleClientRequest(String cmd, User user, ISFSObject isfsObject) throws SFSException {
     System.out.println("Snakes ????");
+    isfsObject.putInt("_suid", user.getId());
+    relayDataToAllUsers(cmd, isfsObject);
   }
 
   @Override
@@ -35,20 +39,13 @@ public class SnakesExt extends BaseSFSExtension {
     super.handleServerEvent(event);
     System.out.println("<<<>>>>>>" + event.getType());
     if (event.getType() == SFSEventType.USER_JOIN_ZONE) {
-      User user = (User) event.getParameter(SFSEventParam.USER);
-      String name = user.getName();
-      userInZone.add(name);
-
-      String message = "Hello " + name;
-      message += ", meet ";
-      for (String userName : userInZone) {
-        message += userName;
-      }
-
-      this.getApi().sendExtensionResponse(message, null, user, null, false);
-
-      System.out.println("User " + name + " has come to the party");
 
     }
+  }
+
+  public void relayDataToAllUsers(String cmd, ISFSObject data) {
+    List<User> userList = new ArrayList<>();
+    userList.addAll(this.getParentZone().getUserList());
+    this.getApi().sendExtensionResponse(cmd, data, userList, null, false);
   }
 }

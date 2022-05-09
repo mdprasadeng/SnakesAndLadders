@@ -19,10 +19,23 @@ public class SnakesAndLadders extends Application {
     public static int OFF_Y = 60;
     private World world;
     private int lastRoll;
+    private SFSClient sfsClient;
+    private String myId;
+
+
+    public SnakesAndLadders(String myId) {
+        this.myId = myId;
+    }
+
     @Override
     protected void preRun() {
         super.preRun();
         this.world = World.createWorld();
+        this.sfsClient = new SFSClient(myId);
+        sfsClient.connect();
+        sfsClient.setOnDiceRoll(diceRoll -> {
+            this.onCurrentPlayerTurn(diceRoll);
+        });
     }
 
     private float getPosX(int i) {
@@ -58,27 +71,19 @@ public class SnakesAndLadders extends Application {
         int COLOR_S = ImGui.getColorU32(1f, 0f, 0f, 1);
         int COLOR_L = ImGui.getColorU32(0f, 1f, 0f, 1);
 
+        ImGui.text("MyId is" + myId);
         ImGui.text("Last Roll was " + lastRoll);
         String playerId = world.playerIds[world.currentTurnBy];
-        if (ImGui.button("Play As " + playerId)) {
-            int min = 1;
-            int max = 6;
-            Player player = world.players.stream().filter(e -> e.id.equals(playerId)).findFirst()
-                .get();
-            Random random = new Random();
-            int value = random.nextInt(max + min) + min;
-            player.position += value;
-            lastRoll = value;
-            world.currentTurnBy +=1;
-            if (world.currentTurnBy == 4) {
-                world.currentTurnBy = 0;
+        if (playerId.equals(myId)) {
+            if (ImGui.button("Play As " + playerId)) {
+                int min = 1;
+                int max = 6;
+                Random random = new Random();
+                int value = random.nextInt(max + min) + min;
+                this.sfsClient.sendDiceRoll(value);
             }
-
-            Line line = world.lines.get(player.position);
-            if (line != null) {
-                player.position = line.end;
-            }
-
+        } else {
+            ImGui.text("Turn by" + playerId);
         }
 
         ImDrawList drawList = ImGui.getWindowDrawList();
@@ -108,8 +113,25 @@ public class SnakesAndLadders extends Application {
 
     }
 
+    public void onCurrentPlayerTurn(int value) {
+        String playerId = world.playerIds[world.currentTurnBy];
+        Player player = world.players.stream().filter(e -> e.id.equals(playerId)).findFirst()
+            .get();
+        player.position += value;
+        lastRoll = value;
+        world.currentTurnBy +=1;
+        if (world.currentTurnBy == 4) {
+            world.currentTurnBy = 0;
+        }
+
+        Line line = world.lines.get(player.position);
+        if (line != null) {
+            player.position = line.end;
+        }
+    }
+
     public static void main(String[] args) {
-        SnakesAndLadders app = new SnakesAndLadders();
+        SnakesAndLadders app = new SnakesAndLadders(args[0]);
         launch(app);
     }
 

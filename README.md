@@ -25,7 +25,36 @@
 * Snakes And Ladders
 * Lets finish building the client
 * talk about what and how to add multiplayer support
-* How to think when building multiplayer games 
+* How to think when building multiplayer games
+
 * Compare approaches of Authoritative vs Relay Servers
 * build a relay based multiplayer first
 * build a authoritative server next
+
+
+
+In the middle of game
+* its turn of PlayerA - now ClientA has clicked a button
+* Client 
+  * rolling a dice 
+  * computing new position
+    * dice roll ++
+    * check for snakes and ladders
+  * compute next turn  
+
+* Authoritative - 
+ * Client -> Server
+ * Client sends rollADice -> Server
+ * Server -> to all clients {dice roll, new position of this player, update next turn}
+ * Input -> Process -> Send
+ 
+
+* Relay Server
+ * Client -> Server
+ * Client sends data -> Server
+ * Server sends data {to all clients} 
+ * data -> {dice roll}
+
+* Server to react on input from user
+* Server to send data to all user 
+
