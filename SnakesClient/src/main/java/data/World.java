@@ -1,5 +1,6 @@
 package data;
 
+import imgui.ImGui;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ public class World {
 
     public static class Player {
         public String name;
+        public int color;
         public int position;
     }
 
@@ -32,10 +34,10 @@ public class World {
         world.rows = 10;
         world.columns = 10;
         world.players = Arrays.asList(
-                createPlayer("Red"),
-                createPlayer("Blue"),
-                createPlayer("Yellow"),
-                createPlayer("Green")
+                createPlayer("Red", ImGui.getColorU32(1f, 0f, 0f, 1)),
+                createPlayer("Blue", ImGui.getColorU32(0f, 0f, 1f, 1)),
+                createPlayer("Yellow", ImGui.getColorU32(1f, 1f, 0f, 1)),
+                createPlayer("Green", ImGui.getColorU32(0f, 1f, 0f, 1))
         );
         List<Line> lines = Arrays.asList(
                 createSnakes(17, 7),
@@ -64,10 +66,11 @@ public class World {
         return world;
     }
 
-    public static Player createPlayer(String name) {
+    public static Player createPlayer(String name, int color) {
         Player player = new Player();
         player.name = name;
         player.position = 1;
+        player.color = color;
         return player;
     }
 
@@ -81,7 +84,7 @@ public class World {
 
     public static Line createLadder(int start, int end) {
         Line line = new Line();
-        line.type = SNLLineType.SNAKE;
+        line.type = SNLLineType.LADDER;
         line.start = start;
         line.end = end;
         return line;
