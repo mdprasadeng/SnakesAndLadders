@@ -58,8 +58,10 @@ public class SnakesAndLadders extends Application {
         int COLOR_L = ImGui.getColorU32(0f, 1f, 0f, 1);
 
         ImGui.text("Hello");
-        ImDrawList drawList = ImGui.getWindowDrawList();
 
+        ImGui.button("Play As ");
+
+        ImDrawList drawList = ImGui.getWindowDrawList();
 
         for (int i = 0; i < this.world.rows; i++) {
             for (int j = 0; j < this.world.columns; j++) {
@@ -76,6 +78,11 @@ public class SnakesAndLadders extends Application {
         for (Line value : this.world.lines.values()) {
             int color = value.type == SNLLineType.SNAKE ? COLOR_S : COLOR_L;
             drawList.addLine(getPosX(value.start), getPosY(value.start), getPosX(value.end), getPosY(value.end), color, 5);
+        }
+
+        for (Player player : this.world.players) {
+            drawList.addCircleFilled(getPosX(player.position), getPosY(player.position), GRID/4f, player.color );
+            drawList.addText(getPosX(player.position), getPosY(player.position) + GRID /5f, player.color,  player.name);
         }
 
 

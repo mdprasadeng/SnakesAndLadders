@@ -11,8 +11,11 @@ public class World {
     public int columns;
     public Map<Integer, Line> lines;
     public List<Player> players;
+    public int currentTurnBy;
+    public String[] playerIds;
 
     public static class Player {
+        public String id;
         public String name;
         public int color;
         public int position;
@@ -61,6 +64,8 @@ public class World {
         for (Line line : lines) {
             world.lines.put(line.start, line);
         }
+        world.currentTurnBy = 0;
+        world.playerIds = new String[] {"Red", "Blue", "Yellow", "Green"};
 
 
         return world;
@@ -68,6 +73,7 @@ public class World {
 
     public static Player createPlayer(String name, int color) {
         Player player = new Player();
+        player.id = name;
         player.name = name;
         player.position = 1;
         player.color = color;
