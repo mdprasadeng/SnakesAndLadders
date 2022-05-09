@@ -19,3 +19,12 @@
 * This repo : https://github.com/mdprasadeng/SnakesAndLadders
 * Smartfox Server: https://www.smartfoxserver.com/
 * Intellij: https://www.jetbrains.com/idea/download
+
+
+# Session 2
+* Lets finish building the client
+* talk about what and how to add multiplayer support
+* How to think when building multiplayer games 
+* Compare approaches of Authoritative vs Relay Servers
+* build a relay based multiplayer first
+* build a authoritative server next
