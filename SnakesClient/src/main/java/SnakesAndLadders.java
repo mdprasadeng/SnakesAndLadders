@@ -1,11 +1,13 @@
 import data.World;
 import data.World.Line;
 import data.World.Player;
+import data.World.PlayerColor;
 import data.World.SNLLineType;
 import imgui.ImDrawList;
 import imgui.ImFont;
 import imgui.ImGui;
 import imgui.app.Application;
+import imgui.type.ImString;
 import java.util.Random;
 
 public class SnakesAndLadders extends Application {
@@ -18,24 +20,18 @@ public class SnakesAndLadders extends Application {
     public static int OFF_X = 150;
     public static int OFF_Y = 60;
     private World world;
-    private int lastRoll;
     private SFSClient sfsClient;
-    private String myId;
+    private ImString name;
 
 
-    public SnakesAndLadders(String myId) {
-        this.myId = myId;
+    public SnakesAndLadders() {
     }
 
     @Override
     protected void preRun() {
         super.preRun();
-        this.world = World.createWorld();
-        this.sfsClient = new SFSClient(myId);
-        sfsClient.connect();
-        sfsClient.setOnDiceRoll(diceRoll -> {
-            this.onCurrentPlayerTurn(diceRoll);
-        });
+        this.sfsClient = new SFSClient();
+        name = new ImString(30);
     }
 
     private float getPosX(int i) {
@@ -60,7 +56,6 @@ public class SnakesAndLadders extends Application {
     }
 
 
-
     @Override
     public void process() {
 
@@ -71,20 +66,32 @@ public class SnakesAndLadders extends Application {
         int COLOR_S = ImGui.getColorU32(1f, 0f, 0f, 1);
         int COLOR_L = ImGui.getColorU32(0f, 1f, 0f, 1);
 
-        ImGui.text("MyId is" + myId);
-        ImGui.text("Last Roll was " + lastRoll);
-        String playerId = world.playerIds[world.currentTurnBy];
-        if (playerId.equals(myId)) {
-            if (ImGui.button("Play As " + playerId)) {
-                int min = 1;
-                int max = 6;
-                Random random = new Random();
-                int value = random.nextInt(max + min) + min;
-                this.sfsClient.sendDiceRoll(value);
+        if (world == null) {
+            ImGui.inputText("Name", this.name);
+            if (ImGui.button("Connect")) {
+                this.sfsClient.setOnWorldUpdate(world -> {
+                    this.updateWorld(world);
+                });
+                this.sfsClient.connect(this.name.get());
+            }
+            return;
+        }
+
+        ImGui.text("MyId is" + this.name.get());
+        ImGui.text("Last Roll was " + world.lastRoll);
+        if (world.currentTurnBy >= 0) {
+            String playerId = world.playerIds[world.currentTurnBy];
+            if (playerId.equals(this.name.get())) {
+                if (ImGui.button("Play As " + playerId)) {
+                    this.sfsClient.sendDiceRoll();
+                }
+            } else {
+                ImGui.text("Turn by" + playerId);
             }
         } else {
-            ImGui.text("Turn by" + playerId);
+            ImGui.text("Waiting for more players");
         }
+
 
         ImDrawList drawList = ImGui.getWindowDrawList();
 
@@ -106,34 +113,44 @@ public class SnakesAndLadders extends Application {
         }
 
         for (Player player : this.world.players) {
-            drawList.addCircleFilled(getPosX(player.position), getPosY(player.position), GRID/4f, player.color );
-            drawList.addText(getPosX(player.position), getPosY(player.position) + GRID /5f, player.color,  player.name);
+            drawList.addCircleFilled(getPosX(player.position), getPosY(player.position), GRID/4f, getColor(player.color) );
+            drawList.addText(getPosX(player.position), getPosY(player.position) + GRID /5f, getColor(player.color),  player.name);
         }
 
 
     }
 
-    public void onCurrentPlayerTurn(int value) {
-        String playerId = world.playerIds[world.currentTurnBy];
-        Player player = world.players.stream().filter(e -> e.id.equals(playerId)).findFirst()
-            .get();
-        player.position += value;
-        lastRoll = value;
-        world.currentTurnBy +=1;
-        if (world.currentTurnBy == 4) {
-            world.currentTurnBy = 0;
+    private void updateWorld(World diffWorld) {
+        if (this.world == null) {
+            this.world = new World();
         }
-
-        Line line = world.lines.get(player.position);
-        if (line != null) {
-            player.position = line.end;
-        }
+        this.world = diffWorld;
     }
+
+    private int getColor(PlayerColor color) {
+        switch (color) {
+            case RED -> {
+                return ImGui.getColorU32(1f, 0f, 0f, 1);
+            }
+            case GREEN -> {
+                return ImGui.getColorU32(0f, 1f, 0f, 1);
+            }
+            case BLUE -> {
+                return ImGui.getColorU32(0f, 0f, 1f, 1);
+            }
+            case YELLOW -> {
+                return ImGui.getColorU32(1f, 1f, 0f, 1);
+            }
+        }
+        return ImGui.getColorU32(1f, 1f, 0f, 1);
+    }
+
 
     public static void main(String[] args) {
-        SnakesAndLadders app = new SnakesAndLadders(args[0]);
+        SnakesAndLadders app = new SnakesAndLadders();
         launch(app);
     }
+
 
 
 }

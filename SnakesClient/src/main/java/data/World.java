@@ -1,10 +1,16 @@
 package data;
 
+import com.smartfoxserver.v2.entities.data.ISFSArray;
+import com.smartfoxserver.v2.entities.data.ISFSObject;
+import com.smartfoxserver.v2.entities.data.SFSObject;
 import imgui.ImGui;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class World {
     public int rows;
@@ -12,19 +18,72 @@ public class World {
     public Map<Integer, Line> lines;
     public List<Player> players;
     public int currentTurnBy;
+    public int lastRoll;
     public String[] playerIds;
+
+    public World withSFS(ISFSObject params) {
+        rows = params.getInt("rw");
+        columns = params.getInt("cl");
+        currentTurnBy = params.getInt("c");
+        lastRoll = params.getInt("l");
+        playerIds = params.getUtfStringArray("p").toArray(e -> new String[e]);
+
+        List<Line> lines = new ArrayList<>();
+        ISFSArray linesSFS = params.getSFSArray("lns");
+        for (int i = 0; i < linesSFS.size(); i++) {
+            ISFSObject lineSFS = linesSFS.getSFSObject(i);
+            lines.add(new Line().withSFS(lineSFS));
+        }
+        this.lines = lines.stream().collect(Collectors.toMap(
+            e -> e.start,
+            Function.identity()
+        ));
+
+        List<Player> players = new ArrayList<>();
+        ISFSArray plySFS = params.getSFSArray("plys");
+        for (int i = 0; i < plySFS.size(); i++) {
+            players.add(new Player().withSFS(plySFS.getSFSObject(i)));
+        }
+        this.players = players;
+
+        return this;
+    }
 
     public static class Player {
         public String id;
         public String name;
-        public int color;
+        public PlayerColor color;
         public int position;
+
+        public Player withSFS(ISFSObject plySFS) {
+            id = plySFS.getUtfString("id");
+            name = plySFS.getUtfString("nm");
+            color = PlayerColor.valueOf(plySFS.getUtfString("cr"));
+            position = plySFS.getInt("p");
+            return this;
+        }
     }
+
+    public enum PlayerColor {
+        RED,
+        GREEN,
+        BLUE,
+        YELLOW
+    }
+
 
     public static class Line {
         public int start;
         public int end;
         public SNLLineType type;
+
+        public Line withSFS(ISFSObject lineSFS) {
+            start = lineSFS.getInt("s");
+            end = lineSFS.getInt("e");
+            type = SNLLineType.valueOf(lineSFS.getUtfString("t"));
+
+            return this;
+        }
     }
 
     public enum SNLLineType {
@@ -32,67 +91,4 @@ public class World {
         LADDER;
     }
 
-    public static World createWorld() {
-        World world = new World();
-        world.rows = 10;
-        world.columns = 10;
-        world.players = Arrays.asList(
-                createPlayer("Red", ImGui.getColorU32(1f, 0f, 0f, 1)),
-                createPlayer("Blue", ImGui.getColorU32(0f, 0f, 1f, 1)),
-                createPlayer("Yellow", ImGui.getColorU32(1f, 1f, 0f, 1)),
-                createPlayer("Green", ImGui.getColorU32(0f, 1f, 0f, 1))
-        );
-        List<Line> lines = Arrays.asList(
-                createSnakes(17, 7),
-                createSnakes(62, 19),
-                createSnakes(54, 34),
-                createSnakes(64, 60),
-                createSnakes(87, 36),
-                createSnakes(93, 73),
-                createSnakes(94, 75),
-                createSnakes(98, 79),
-                createLadder(1, 38),
-                createLadder(4, 14),
-                createLadder(9, 31),
-                createLadder(21, 42),
-                createLadder(28, 84),
-                createLadder(51, 67),
-                createLadder(72, 91),
-                createLadder(80, 99)
-                );
-        world.lines = new HashMap<>();
-        for (Line line : lines) {
-            world.lines.put(line.start, line);
-        }
-        world.currentTurnBy = 0;
-        world.playerIds = new String[] {"Red", "Blue", "Yellow", "Green"};
-
-
-        return world;
-    }
-
-    public static Player createPlayer(String name, int color) {
-        Player player = new Player();
-        player.id = name;
-        player.name = name;
-        player.position = 1;
-        player.color = color;
-        return player;
-    }
-
-    public static Line createSnakes(int start, int end) {
-        Line line = new Line();
-        line.type = SNLLineType.SNAKE;
-        line.start = start;
-        line.end = end;
-        return line;
-    }
-
-    public static Line createLadder(int start, int end) {
-        Line line = new Line();
-        line.type = SNLLineType.LADDER;
-        line.start = start;
-        line.end = end;
-        return line;
-    }
 }

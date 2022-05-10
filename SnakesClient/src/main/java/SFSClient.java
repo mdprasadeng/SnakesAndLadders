@@ -1,6 +1,7 @@
 import com.smartfoxserver.v2.entities.data.ISFSObject;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 import com.smartfoxserver.v2.exceptions.SFSException;
+import data.World;
 import java.util.function.Consumer;
 import org.apache.commons.lang.math.RandomUtils;
 import sfs2x.client.SmartFox;
@@ -15,20 +16,16 @@ public class SFSClient implements IEventListener {
 
   private ConfigData cfg;
   private SmartFox sfs;
-  private Consumer<Integer> onDiceRoll;
+  private Consumer<World> onWorldUpdate;
+
   private String myId;
 
-  public SFSClient(String myId) {
-
-    this.myId = myId;
+  public void setOnWorldUpdate(Consumer<World> onWorldUpdate) {
+    this.onWorldUpdate = onWorldUpdate;
   }
 
-  public void setOnDiceRoll(Consumer<Integer> onDiceRoll) {
-    this.onDiceRoll = onDiceRoll;
-  }
-
-  public void connect() {
-
+  public void connect(String name) {
+    this.myId = name;
     // Configure client connection settings
     this.cfg = new ConfigData();
     this.cfg.setHost("localhost");
@@ -51,17 +48,11 @@ public class SFSClient implements IEventListener {
 
   }
 
-  public void sendDiceRoll(int diceRoll) {
+  public void sendDiceRoll() {
     SFSObject sfsObject = new SFSObject();
-    sfsObject.putInt("diceRoll", diceRoll);
-    this.sfs.send(new ExtensionRequest("mydata", sfsObject));
+    this.sfs.send(new ExtensionRequest("droll", sfsObject));
   }
 
-  public static void main(String[] args) {
-    SFSClient sfsClient = new SFSClient("sfd");
-    sfsClient.connect();
-    System.out.println("Hello world");
-  }
 
   @Override
   public void dispatch(BaseEvent baseEvent) throws SFSException {
@@ -72,11 +63,12 @@ public class SFSClient implements IEventListener {
 
     if (baseEvent.getType().equals(SFSEvent.EXTENSION_RESPONSE)) {
       System.out.println("Got " + baseEvent.getArguments());
+
       ISFSObject params = (ISFSObject) baseEvent.getArguments().get("params");
-      Integer diceRoll = params.getInt("diceRoll");
-      if (onDiceRoll != null) {
-        onDiceRoll.accept(diceRoll);
+      if (onWorldUpdate != null) {
+        onWorldUpdate.accept(new World().withSFS(params));
       }
+
     }
   }
 }
