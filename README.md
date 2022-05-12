@@ -19,6 +19,8 @@
 * This repo : https://github.com/mdprasadeng/SnakesAndLadders
 * Smartfox Server: https://www.smartfoxserver.com/
 * Intellij: https://www.jetbrains.com/idea/download
+ 
+ Video : https://drive.google.com/file/d/14NqWqplOf5idY3UhAUGQTqhFmbdj3j3X/view?usp=sharing
 
 
 # Session 2
@@ -57,4 +59,16 @@ In the middle of game
 
 * Server to react on input from user
 * Server to send data to all user 
+ 
+ Videos:
+Part 1 : https://drive.google.com/file/d/10ZtfhRIwwf1cumfqbdw5hpgDgUzsjeUl/view?usp=sharing
+Part 2 : https://drive.google.com/file/d/1vU_5Wycn5Kk8k_O0zMMvkGFLK6lGFn3J/view?usp=sharing
+Part 3: https://drive.google.com/file/d/1yBFiUve7gbsGK1e0BB-mk6oZWDtIBA59/view?usp=sharing
 
+ ## Session 3 
+ Slides : https://docs.google.com/presentation/d/1ow91hosYEJNCtq-vrxkVv-G5V9NRa_oxrQ_ZR1jkYas/edit#slide=id.p
+ 
+ Videos:
+ Part 1 : https://drive.google.com/file/d/16pVvKpRdNUV1BGSiDcEK0mtAqIxVWial/view?usp=sharing
+ Part 2 : https://drive.google.com/file/d/1BZkd8pZRPzHKs40BkG9OJeu0lRXcGcaI/view?usp=sharing 
+ 
